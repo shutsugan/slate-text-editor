@@ -1,0 +1,12 @@
+.FormatToolbar {
+  display: flex;
+  border-bottom: solid 1.4px #DDD;
+  padding: 8px 0;
+  margin: 0 0 8px 0;
+}
+
+.FormatToolbar__icon-button {
+  border: none;
+  background: transparent;
+  outline: none;
+}
