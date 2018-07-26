@@ -5,6 +5,7 @@ import {italic} from 'react-icons-kit/feather/italic';
 import {code} from 'react-icons-kit/feather/code';
 import {list} from 'react-icons-kit/feather/list';
 import {underline} from 'react-icons-kit/feather/underline';
+import {minus} from 'react-icons-kit/feather/minus';
 
 import '../css/ToolbarButton.css';
 
@@ -29,6 +30,8 @@ function toggleType(type) {
       return list;
     case 'underline':
       return underline;
+    case 'strikethrough':
+        return minus;
     default:
       return bold;
   }

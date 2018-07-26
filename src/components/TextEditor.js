@@ -1,6 +1,7 @@
 import React, {Component, Fragment} from 'react';
 import {Editor} from 'slate-react';
 import {Value} from 'slate';
+import Plain from 'slate-plain-serializer'
 import BoldMark from './BoldMark';
 import ItalicMark from './ItalicMark';
 import FormatToolbar from './FormatToolbar';
@@ -9,12 +10,24 @@ import initial_value from '../config/value.json';
 
 import '../css/TextEditor.css';
 
+const existing_value = JSON.parse(localStorage.getItem('content'));
+
 class TextEditor extends Component {
   state = {
-      value: Value.fromJSON(initial_value),
+      value: Value.fromJSON(existing_value || initial_value),
   }
 
-  onChange = ({value}) => this.setState({value});
+  onChange = ({value}) => {
+    if (value.document !== this.state.value.document) {
+      const content = JSON.stringify(value.toJSON());
+      localStorage.setItem('content', content);
+
+      const content_plain = Plain.serialize(value);
+      localStorage.setItem('content_plain', content_plain);
+    }
+
+    this.setState({value});
+  }
 
   onKeyDown = (event, change) => {
     if (!event.ctrlKey) return;
@@ -35,6 +48,9 @@ class TextEditor extends Component {
         return true;
       case 'u':
         change.toggleMark('underline');
+        return true;
+      case 's':
+        change.toggleMark('strikethrough');
         return true;
       default:
         change.toggleMark('bold');
@@ -62,7 +78,9 @@ class TextEditor extends Component {
       case 'list':
         return <ul {...props.arrtibutes}><li>{props.children}</li></ul>;
       case 'underline':
-        return <u {...props.attributes}>{props.children}</u>
+        return <u {...props.attributes}>{props.children}</u>;
+      case 'strikethrough':
+        return <del {...props.attributes}>{props.children}</del>;
       default:
         return <BoldMark {...props} />;
     }
@@ -78,6 +96,7 @@ class TextEditor extends Component {
             <ToolbarButton type="code" onMarkClick={this.onMarkClick} />
             <ToolbarButton type="list" onMarkClick={this.onMarkClick} />
             <ToolbarButton type="underline" onMarkClick={this.onMarkClick} />
+            <ToolbarButton type="strikethrough" onMarkClick={this.onMarkClick} />
           </FormatToolbar>
           <Editor
             value={this.state.value}
