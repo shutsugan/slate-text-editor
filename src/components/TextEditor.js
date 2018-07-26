@@ -1,11 +1,12 @@
 import React, {Component, Fragment} from 'react';
 import {Editor} from 'slate-react';
 import {Value} from 'slate';
-import Plain from 'slate-plain-serializer'
+import Plain from 'slate-plain-serializer';
 import BoldMark from './BoldMark';
 import ItalicMark from './ItalicMark';
 import FormatToolbar from './FormatToolbar';
 import ToolbarButton from './ToolbarButton';
+import Link from './Link';
 import initial_value from '../config/value.json';
 
 import '../css/TextEditor.css';
@@ -14,7 +15,7 @@ const existing_value = JSON.parse(localStorage.getItem('content'));
 
 class TextEditor extends Component {
   state = {
-      value: Value.fromJSON(existing_value || initial_value),
+      value: Value.fromJSON(existing_value || initial_value)
   }
 
   onChange = ({value}) => {
@@ -52,6 +53,15 @@ class TextEditor extends Component {
       case 's':
         change.toggleMark('strikethrough');
         return true;
+      case 'a':
+        change.toggleMark('link');
+        return true;
+      case 'q':
+        change.toggleMark('quote');
+        return true;
+      case 'm':
+        change.toggleMark('image');
+        return true;
       default:
         change.toggleMark('bold');
         return true;
@@ -81,6 +91,12 @@ class TextEditor extends Component {
         return <u {...props.attributes}>{props.children}</u>;
       case 'strikethrough':
         return <del {...props.attributes}>{props.children}</del>;
+      case 'link':
+        return <Link {...props} />
+      case 'quote':
+        return <blockquote {...props.attributes} >{props.children}</blockquote>;
+      case 'image':
+        return <img {...props.attributes} src={props.children} />;
       default:
         return <BoldMark {...props} />;
     }
@@ -97,6 +113,7 @@ class TextEditor extends Component {
             <ToolbarButton type="list" onMarkClick={this.onMarkClick} />
             <ToolbarButton type="underline" onMarkClick={this.onMarkClick} />
             <ToolbarButton type="strikethrough" onMarkClick={this.onMarkClick} />
+            <ToolbarButton type="quote" onMarkClick={this.onMarkClick} />
           </FormatToolbar>
           <Editor
             value={this.state.value}
